@@ -4,7 +4,8 @@ set -e -x
 SYSROOT=`$TARGET_CC --print-sysroot`
 
 # Compile wheels
-for PY_MINOR in 8 9 10 11 12; do
+# for PY_MINOR in 8 9 10 11 12; do
+for PY_MINOR in 8; do
   PYTHON="python3.${PY_MINOR}"
   PYTHON_ABI="cp3${PY_MINOR}-cp3${PY_MINOR}"
   if [ "$PY_MINOR" = "7" ]; then
@@ -15,14 +16,13 @@ for PY_MINOR in 8 9 10 11 12; do
   $PYTHON -m crossenv "/opt/python/${PYTHON_ABI}/bin/python3" --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $SYSROOT "venv-py3${PY_MINOR}"
   . "venv-py3${PY_MINOR}/bin/activate"
   pip install wheel setuptools
-  pip install pybind11
-  python setup.py bdist_wheel --plat-name "manylinux2014_$ARCH" --dist-dir /tmp/dist/
+  python setup.py bdist_wheel --plat-name "manylinux2014_$ARCH" --dist-dir /io/dist/
   deactivate
 done
 
 # auditwheel symbols
 python3 -m pip install -U auditwheel-symbols
-for whl in /tmp/dist/fasttext*.whl; do
+for whl in /io/dist/fasttext*.whl; do
     auditwheel-symbols "$whl"
 done
 

@@ -23,7 +23,7 @@ done
 # auditwheel symbols
 python3 -m pip install -U auditwheel-symbols
 for whl in /tmp/dist/fasttext*.whl; do
-    auditwheel-symbols "$whl" -w /io/dist/
+    auditwheel repair "$whl" -w /io/dist/
 done
 
 # Bundle external shared libraries into the wheels

@@ -12,7 +12,7 @@ name: macOS Build
 jobs:
   build:
     name: Build
-    runs-on: macos-latest
+    runs-on: macos-14
     strategy:
       fail-fast: false
       matrix:
@@ -30,7 +30,7 @@ jobs:
         shell: bash -l {0}
         run: |
             export MACOSX_DEPLOYMENT_TARGET=10.9
-            curl -sqL https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.9.sdk.tar.xz | tar -xC $HOME
+            curl -sqL https://github.com/joseluisq/macosx-sdks/releases/download/14.0/MacOSX14.0.sdk.tar.xz | tar -xC $HOME
             # set minimum sdk version to our target
             plutil -replace MinimumSDKVersion -string ${MACOSX_DEPLOYMENT_TARGET} $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
             plutil -replace DTSDKName -string macosx${MACOSX_DEPLOYMENT_TARGET}internal $(xcode-select -p)/Platforms/MacOSX.platform/Info.plist
@@ -39,9 +39,8 @@ jobs:
             source ~/.bash_profile
             conda activate fasttext_venv
             python -c "import sys; print(sys.version)"
-            sed -i '' '/mac_osx_version/d' setup.py
-            export CFLAGS="${CFLAGS} -isysroot $HOME/MacOSX10.9.sdk"
-            export CXXFLAGS="${CXXFLAGS} -isysroot $HOME/MacOSX10.9.sdk"
+            export CFLAGS="${CFLAGS} -isysroot $HOME/MacOSX14.0.sdk"
+            export CXXFLAGS="${CXXFLAGS} -isysroot $HOME/MacOSX14.0.sdk"
             python setup.py bdist_wheel
             pip install delocate
             delocate-wheel -w dist -v dist/fasttext*.whl

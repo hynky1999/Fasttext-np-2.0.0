@@ -10,8 +10,8 @@ for PY_MINOR in 8 9 10 11 12; do
   if [ "$PY_MINOR" = "7" ]; then
      PYTHON_ABI="${PYTHON_ABI}m"
   fi
-  # $PYTHON -m pip install crossenv
-  $PYTHON -m pip install https://github.com/virtuald/crossenv/archive/refs/heads/master.zip
+  $PYTHON -m pip install crossenv
+  # $PYTHON -m pip install https://github.com/virtuald/crossenv/archive/refs/heads/master.zip
   $PYTHON -m crossenv "/opt/python/${PYTHON_ABI}/bin/python3" --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $SYSROOT "venv-py3${PY_MINOR}"
   . "venv-py3${PY_MINOR}/bin/activate"
   pip install wheel setuptools

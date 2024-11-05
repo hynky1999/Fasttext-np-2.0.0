@@ -169,7 +169,7 @@ def _get_readme():
 
 
 setup(
-    name="fasttext",
+    name="fasttext-numpy2-wheel",
     version=__version__,
     author="Onur Celebi",
     author_email="celebio@fb.com",

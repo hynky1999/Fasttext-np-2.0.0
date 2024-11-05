@@ -1,0 +1,70 @@
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+  workflow_dispatch:
+
+name: Linux Build
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.12']
+        arch: ["x86_64", "i686"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Display Python version
+        run: python -c "import sys; print(sys.version)"
+      - name: Build manylinux wheels
+        run: |
+            docker run --rm -v `pwd`:/io -w /io quay.io/pypa/manylinux2014_${{ matrix.arch }} sh manylinux.sh
+            ls -lrth dist/
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-wheels
+          path: dist/fasttext_wheel-*
+      - name: Publish manylinux package
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.event.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          skip_existing: true
+
+  cross-build:
+    name: Cross Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: ["aarch64", "armv7l", "s390x", "ppc64le", "ppc64"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build manylinux wheels
+        run: |
+            docker run -e ARCH=${{ matrix.arch }} --rm -v `pwd`:/io -w /io messense/manylinux2014-cross:${{ matrix.arch }} sh manylinux-cross.sh
+            ls -lrth dist/
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: linux-wheels
+          path: dist/fasttext_wheel-*.whl
+      - name: Publish manylinux package
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.event.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          skip_existing: true

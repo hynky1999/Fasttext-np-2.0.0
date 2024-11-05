@@ -43,7 +43,7 @@ jobs:
             export CXXFLAGS="${CXXFLAGS} -isysroot $HOME/MacOSX14.0.sdk"
             python setup.py bdist_wheel
             pip install delocate
-            pip install pybind11
+            conda install -c conda-forge pybind11
             delocate-wheel -w dist -v dist/fasttext*.whl
             ls -lrth dist/
       - name: Upload wheels

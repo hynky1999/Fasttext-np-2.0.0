@@ -15,16 +15,14 @@ for PY_MINOR in 8 9 10 11 12; do
   $PYTHON -m crossenv "/opt/python/${PYTHON_ABI}/bin/python3" --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $SYSROOT "venv-py3${PY_MINOR}"
   . "venv-py3${PY_MINOR}/bin/activate"
   pip install wheel setuptools
-  python setup.py bdist_wheel --plat-name "manylinux2014_$ARCH" --dist-dir ../dist/
+  python setup.py bdist_wheel --plat-name "manylinux2014_$ARCH" --dist-dir /tmp/dist/
   deactivate
 done
 
-cd ..
-
 # auditwheel symbols
 python3 -m pip install -U auditwheel-symbols
-for whl in dist/fasttext*.whl; do
-    auditwheel-symbols "$whl"
+for whl in /tmp/dist/fasttext*.whl; do
+    auditwheel-symbols "$whl" --output-dir /io/dist/
 done
 
 # Bundle external shared libraries into the wheels

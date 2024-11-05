@@ -15,6 +15,7 @@ for PY_MINOR in 8 9 10 11 12; do
   $PYTHON -m crossenv "/opt/python/${PYTHON_ABI}/bin/python3" --cc $TARGET_CC --cxx $TARGET_CXX --sysroot $SYSROOT "venv-py3${PY_MINOR}"
   . "venv-py3${PY_MINOR}/bin/activate"
   pip install wheel setuptools
+  pip install pybind11
   python setup.py bdist_wheel --plat-name "manylinux2014_$ARCH" --dist-dir /tmp/dist/
   deactivate
 done

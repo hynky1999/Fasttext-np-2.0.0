@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build manylinux wheels
         run: |
-            docker run -e ARCH=${{ matrix.arch }} --rm -v `pwd`:/io -w /io messense/manylinux_2_28-cross:${{ matrix.arch }} sh manylinux-cross.sh
+            docker run -e ARCH=${{ matrix.arch }} --rm -v `pwd`:/io -w /io messense/manylinux2014-cross:${{ matrix.arch }} sh manylinux-cross.sh
             ls -lrth dist/
       - name: Upload wheels
         uses: actions/upload-artifact@v3
